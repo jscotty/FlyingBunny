@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import my.flying.bunny.generator.Block;
 import my.flying.bunny.generator.World;
+import my.flying.bunny.moveable.Bunny;
 
 
 public class TileManager {
@@ -21,6 +22,12 @@ public class TileManager {
 	public void tick(double deltaTime){
 		for(Block block:blocks){
 			block.tick(deltaTime);
+			
+			if(Bunny.render.intersects(block)){
+				block.setLoading(true);
+			} else {
+				block.setLoading(false);
+			}
 			
 		}
 		if(!loadedBlocks.isEmpty()){

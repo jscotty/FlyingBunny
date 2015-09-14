@@ -14,7 +14,7 @@ public class Block extends Rectangle {
 	private BlockType blockType;
 	private BufferedImage block;
 	private boolean isSolid;
-	private boolean isLoading;
+	private boolean isLoading = false;
 	private boolean dropped = false;
 	private String tag;
 
@@ -37,12 +37,19 @@ public class Block extends Rectangle {
 			block = Assets.getDirt_01();
 			break;
 		case GROUND_DIRT_02:
+			block = Assets.getDirt_02();
 				break;
+		case GROUND_GRASS_01:
+			block = Assets.getGrass_01();
+			break;
 		case AIR_01:
 			block = Assets.getAir_01();
 			break;
 		case AIR_02:
 			block = Assets.getAir_02();
+			break;
+		case AIR_03:
+			block = Assets.getAir_03();
 			break;
 		default:
 			break;
@@ -60,13 +67,14 @@ public class Block extends Rectangle {
 	}
 
 	public void tick(double deltaTime){
-		
+		if(isLoading)
+			setBounds((int)pos.xPos, (int)pos.yPos, blockSize, blockSize);
 	}
 	
 	public void render(Graphics2D g){
 		if(block != null){
-			
-			g.drawImage(block,(int)pos.getWorldLocation().xPos, (int)pos.getWorldLocation().yPos, blockSize, blockSize,null);
+			if(isLoading)
+				g.drawImage(block,(int)pos.getWorldLocation().xPos, (int)pos.getWorldLocation().yPos, blockSize, blockSize,null);
 			
 		}
 	}
@@ -80,6 +88,10 @@ public class Block extends Rectangle {
 		GROUND_GRASS_01,GROUND_GRASS_02,GROUND_GRASS_03,
 		AIR_01, AIR_02, AIR_03, AIR_04, AIR_05,
 		SPACE_01, SPACE_02, SPACE_03, SPACE_04
+	}
+	
+	public void setLoading(boolean isLoading) {
+		this.isLoading = isLoading;
 	}
 
 }

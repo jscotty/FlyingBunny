@@ -14,6 +14,7 @@ public class LevelLoader extends GameState{
 	
 	private int level;
 	
+	
 	public static int wSpawnX, wSpawnY;
 	
 	public LevelLoader(GameStateManager gsm) {

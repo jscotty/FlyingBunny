@@ -3,10 +3,14 @@ package my.flying.bunny.generator;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import my.flying.bunny.canon.Canon;
+import my.flying.bunny.canon.CanonType;
+import my.flying.bunny.gameloop.GameLoop;
 import my.flying.bunny.generator.Block.BlockType;
 import my.flying.bunny.managers.GameStateManager;
 import my.flying.bunny.managers.HUDManager;
 import my.flying.bunny.managers.TileManager;
+import my.flying.bunny.moveable.BoostBar;
 import my.flying.bunny.moveable.Bunny;
 import my.flying.bunny.referance.WorldData;
 import my.flying.bunny.sprites.Sprites;
@@ -19,10 +23,12 @@ public class World {
 
 	public Vector2D worldPos = new Vector2D(0, 0);
 	private static Bunny player;
+	public Canon canon;
 	private HUDManager hud;
 	private BufferedImage map;
 	private int worldWidth, worldHeight, blockSize = 32;
 	private TileManager tiles;
+	private BoostBar boostBar;
 	
 	private Block spawn;
 	
@@ -33,22 +39,28 @@ public class World {
 	}
 	
 	public void init(){
-		tiles = new TileManager();
-		hud = new HUDManager();
-		
+
 		player.init(this);
+		tiles = new TileManager();
+		hud = new HUDManager(player);
+		
 		hud.init();
 
 		worldPos.xPos = spawn.getBlockLocation().xPos - player.getPos().xPos;
 		worldPos.yPos = spawn.getBlockLocation().yPos - player.getPos().yPos;
+		
+
+		canon = new Canon(player.getPos().xPos - 48, player.getPos().yPos - 64, CanonType.STANDARD);
+		canon.init();
 
 		Vector2D.setWorldVaribles(worldPos.xPos, worldPos.yPos);
 	}
 	
 	public void tick(double deltaTime){
-		tiles.tick(deltaTime);
 		player.tick(deltaTime);
+		tiles.tick(deltaTime);
 		hud.tick(deltaTime);
+		canon.tick(deltaTime);
 
 
 		Vector2D.setWorldVaribles(worldPos.xPos, worldPos.yPos);
@@ -66,15 +78,25 @@ public class World {
 			for (int x = 0; x < worldWidth; x++) {
 				for (int y = 0; y < worldHeight; y++) {
 					int col = map.getRGB(x, y);
-					//int randNum = (int)Math.floor(Math.random()*20);
+					
+					int randNum = (int)Math.floor(Math.random()*20);
 					switch (col & 0xFFFFFF) {
 					case 0x4BA7B7:
-						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_01).isSolid(true));
+						if(randNum >= 15)
+							TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_01).isSolid(true));
+						else
+							TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_02).isSolid(true));
 						break;
 					case 0x306C75:
-						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_02).isSolid(true));
+						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_03).isSolid(true));
 						break;
 					case 0x5BB54D:
+						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.GROUND_GRASS_01).isSolid(true));
+						break;
+					case 0x211308:
+						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.GROUND_DIRT_02).isSolid(true));
+						break;
+					case 0x72441E:
 						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.GROUND_DIRT_01).isSolid(true));
 						break;
 					
@@ -88,6 +110,7 @@ public class World {
 	public void render(Graphics2D g){
 		tiles.render(g);
 		player.render(g);
+		canon.render(g);
 		hud.render(g);
 	}
 	
@@ -110,6 +133,19 @@ public class World {
 		}
 	}
 	
+	public void move(Vector2D velocity, float speed){
+
+		if(speed >= 0){
+			worldPos.xPos-=velocity.xPos * speed;
+			canon.getPos().xPos+=velocity.xPos * speed;
+			
+			worldPos.yPos+=velocity.yPos * speed;
+			canon.getPos().yPos-=velocity.yPos * speed;
+		} else {
+			worldPos.yPos+=velocity.yPos;
+			canon.getPos().yPos-=velocity.yPos;
+		}
+	}
 	
 	public static Bunny getPlayer() {
 		return player;

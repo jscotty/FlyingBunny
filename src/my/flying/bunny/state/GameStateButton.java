@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import my.flying.bunny.main.Loading;
 import my.flying.bunny.managers.GameStateManager;
 import my.flying.bunny.managers.MouseManager;
 import my.javagame.main.Vector2D;
@@ -19,6 +20,8 @@ public class GameStateButton extends Rectangle{
 	
 	private int width = 32*3 *2;
 	private int height = 32 *2;
+	
+	private int count = 0;
 	
 	private boolean hoover;
 	
@@ -35,7 +38,6 @@ public class GameStateButton extends Rectangle{
 	
 	public void tick(){
 		setBounds((int)pos.xPos, (int)pos.yPos, width, height);
-		
 		if(getBounds().contains(new Point(MouseManager.mouse))){
 			hoover = true;
 		} else
@@ -44,11 +46,16 @@ public class GameStateButton extends Rectangle{
 		if(gameState != null){
 			if(hoover){
 				if(isPressed()){
-					//clicked function
-					hoover = false;
-					MouseManager.pressed = false;
-					gsm.states.push(gameState);
-					gsm.states.peek().init();
+					Loading.isLoading();
+					
+					count++;
+					if(count >= 3){
+						//clicked function
+						hoover = false;
+						MouseManager.pressed = false;
+						gsm.states.push(gameState);
+						gsm.states.peek().init();
+					}
 					
 				}
 			}
