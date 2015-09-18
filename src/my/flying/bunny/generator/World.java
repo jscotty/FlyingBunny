@@ -3,15 +3,17 @@ package my.flying.bunny.generator;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import my.flying.bunny.assets.Assets;
 import my.flying.bunny.canon.Canon;
 import my.flying.bunny.canon.CanonType;
-import my.flying.bunny.gameloop.GameLoop;
 import my.flying.bunny.generator.Block.BlockType;
+import my.flying.bunny.listener.KeyEventListener;
 import my.flying.bunny.managers.GameStateManager;
 import my.flying.bunny.managers.HUDManager;
+import my.flying.bunny.managers.MouseManager;
 import my.flying.bunny.managers.TileManager;
-import my.flying.bunny.moveable.BoostBar;
 import my.flying.bunny.moveable.Bunny;
+import my.flying.bunny.moveable.BunnyStats;
 import my.flying.bunny.referance.WorldData;
 import my.flying.bunny.sprites.Sprites;
 import my.flying.bunny.state.LevelLoader;
@@ -22,13 +24,15 @@ import my.javagame.main.loadImageFrom;
 public class World {
 
 	public Vector2D worldPos = new Vector2D(0, 0);
+	public Vector2D launchePos = new Vector2D(0, -30);
 	private static Bunny player;
 	public Canon canon;
 	private HUDManager hud;
 	private BufferedImage map;
-	private int worldWidth, worldHeight, blockSize = 32;
+	private int worldWidth, worldHeight, blockSize = 64;
 	private TileManager tiles;
-	private BoostBar boostBar;
+	
+	private MouseManager mm;
 	
 	private Block spawn;
 	
@@ -39,7 +43,7 @@ public class World {
 	}
 	
 	public void init(){
-
+		mm = new MouseManager();
 		player.init(this);
 		tiles = new TileManager();
 		hud = new HUDManager(player);
@@ -50,18 +54,20 @@ public class World {
 		worldPos.yPos = spawn.getBlockLocation().yPos - player.getPos().yPos;
 		
 
-		canon = new Canon(player.getPos().xPos - 48, player.getPos().yPos - 64, CanonType.STANDARD);
+		canon = new Canon(player.getPos().xPos - 24, player.getPos().yPos - 45, CanonType.STANDARD);
 		canon.init();
 
+		resetWorld();
 		Vector2D.setWorldVaribles(worldPos.xPos, worldPos.yPos);
+		
 	}
 	
 	public void tick(double deltaTime){
+		mm.tick(deltaTime);
 		player.tick(deltaTime);
 		tiles.tick(deltaTime);
 		hud.tick(deltaTime);
 		canon.tick(deltaTime);
-
 
 		Vector2D.setWorldVaribles(worldPos.xPos, worldPos.yPos);
 	}
@@ -74,7 +80,6 @@ public class World {
 			} catch (Exception e) {
 
 			}
-			
 			for (int x = 0; x < worldWidth; x++) {
 				for (int y = 0; y < worldHeight; y++) {
 					int col = map.getRGB(x, y);
@@ -84,8 +89,10 @@ public class World {
 					case 0x4BA7B7:
 						if(randNum >= 15)
 							TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_01).isSolid(true));
-						else
+						else if(randNum >= 8)
 							TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_02).isSolid(true));
+						else 
+							TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_03).isSolid(true));
 						break;
 					case 0x306C75:
 						TileManager.blocks.add(new Block(new Vector2D(x*blockSize,y*blockSize),BlockType.AIR_03).isSolid(true));
@@ -109,9 +116,14 @@ public class World {
 	}
 	public void render(Graphics2D g){
 		tiles.render(g);
+		g.drawImage(Assets.getLauncheBG(), (int)launchePos.xPos,(int)launchePos.yPos,null);
 		player.render(g);
 		canon.render(g);
 		hud.render(g);
+	}
+	
+	public void resetWorld(){
+		KeyEventListener.space = false;
 	}
 	
 	public void setSize(int width, int height){
@@ -132,18 +144,50 @@ public class World {
 			}
 		}
 	}
+	public Vector2D getWorldPos() {
+		return worldPos;
+	}
+	public float getWorldXPos(){
+		return worldPos.xPos;
+	}
+	public float getWorldYPos(){
+		return worldPos.yPos;
+	}
+	public boolean isGenerated(){
+		return generated;
+	}
 	
 	public void move(Vector2D velocity, float speed){
-
 		if(speed >= 0){
+			
 			worldPos.xPos-=velocity.xPos * speed;
 			canon.getPos().xPos+=velocity.xPos * speed;
+			launchePos.xPos-=velocity.xPos * speed;
 			
 			worldPos.yPos+=velocity.yPos * speed;
+			launchePos.yPos-=velocity.yPos * speed;
 			canon.getPos().yPos-=velocity.yPos * speed;
 		} else {
 			worldPos.yPos+=velocity.yPos;
+			launchePos.yPos-=velocity.yPos; 
 			canon.getPos().yPos-=velocity.yPos;
+		}
+	}
+	
+	public void moveY(Vector2D velocity, float speed){
+
+		if(worldPos.yPos >= 49400 || !KeyEventListener.up && !BunnyStats.hasFuel){
+			
+		} else {
+			if(speed >= 0){
+				worldPos.yPos+=velocity.yPos * speed;
+				launchePos.yPos-=velocity.yPos * speed;
+				canon.getPos().yPos-=velocity.yPos * speed;
+			} else {
+				worldPos.yPos+=velocity.yPos;
+				launchePos.yPos-=velocity.yPos;
+				canon.getPos().yPos-=velocity.yPos;
+			}
 		}
 	}
 	

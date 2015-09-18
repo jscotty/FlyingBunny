@@ -14,7 +14,7 @@ public class Canon {
 	private Animator animIdle;
 	private Animator animShoot;
 	
-	private int width = 32, height = 48;
+	private int width = 16, height = 32;
 	
 	private float scale = 2f;
 	

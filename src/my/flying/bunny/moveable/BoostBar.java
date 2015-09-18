@@ -6,6 +6,9 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 import my.flying.bunny.assets.Assets;
+import my.flying.bunny.generator.World;
+import my.flying.bunny.listener.KeyEventListener;
+import my.flying.bunny.moveable.Bunny.anim;
 import my.javagame.main.Vector2D;
 
 public class BoostBar implements KeyListener{
@@ -20,41 +23,46 @@ public class BoostBar implements KeyListener{
 	private Vector2D pinPos = new Vector2D(0,0);
 	
 	private static float speed = 2f , moveSpeed = speed;
+	private static boolean boosted;
 	
 	private float percent;
 	private float boostMultiplier = 0;
+	private float minY;
 	
 	public BoostBar(Bunny player, float xPos, float yPos) {
 		this.player = player;
 		pos.xPos = xPos; pinPos.xPos = xPos;
 		pos.yPos = yPos; pinPos.yPos = yPos;
+		
+		minY = yPos;
 	}
 	
 	public void init(){
 		bar = Assets.getBoostBar_bar();
 		pin = Assets.getBoostBar_pin();
-		
+		reset();
 	}
 	
 	public void tick(double deltaTime){
-		if(pinPos.yPos-200 >= 145){
+		if(pinPos.yPos-minY >= 145){
 			speed = -moveSpeed;
-		} else if(pinPos.yPos-200 <= 0){
+		} else if(pinPos.yPos-minY <= 0){
 			speed = moveSpeed;
 		}
-
 		pinPos.yPos+=speed;
 		
-		if(pinPos.yPos-200 >= 75){
-			percent = (((pinPos.yPos - 275) / 75) * -100)+100 ;
+		if(pinPos.yPos-minY >= 75){
+			percent = (((pinPos.yPos - (minY+75)) / 75) * -100)+100 ;
 		} else {
-			percent = ((pinPos.yPos - 200) / 75) * 100;
+			percent = ((pinPos.yPos - minY) / 75) * 100;
 		}
-		
 		if(speed == 0 && boostMultiplier == 0){
 			boostMultiplier = (percent / 100 )*2;
-			System.out.println(boostMultiplier);
-			player.setSpeed(player.getMaxSpeed()*boostMultiplier);
+			player.setSpeed(player.getCanonSpeed()*boostMultiplier);
+			System.out.println("p*bm: " + (player.getMaxSpeed()*boostMultiplier) + " p: " + player.getMaxSpeed() + " bm: " + boostMultiplier);
+		}
+		if(!KeyEventListener.space){
+			System.out.println("bm: " + (percent / 100 )*2 + " %: " + percent);
 		}
 	//	System.out.println(percent + " ypos" + (pinPos.yPos-200));
 	}
@@ -63,11 +71,28 @@ public class BoostBar implements KeyListener{
 		g.drawImage(bar, (int)pos.xPos, (int)pos.yPos, 32, 160, null);
 		g.drawImage(pin, (int)pinPos.xPos, (int)pinPos.yPos, 32, 16, null);
 	}
-
+	
+	public boolean isBoosted(){
+		return this.boosted;
+	}
+	public float getPercent() {
+		return percent;
+	}
+	public void reset() {
+		boostMultiplier = 0;
+		speed = 2f;
+		boosted = false;
+		moveSpeed = 2;
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_SPACE){
-			speed = 0; moveSpeed = 0;
+			if(!boosted){
+				speed = 0; moveSpeed = 0;
+				World.getPlayer().setAnimState(anim.UP);
+				boosted = true;
+			}
 		}
 	}
 
@@ -76,5 +101,6 @@ public class BoostBar implements KeyListener{
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {}
+
 
 }

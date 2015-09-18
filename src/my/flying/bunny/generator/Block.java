@@ -10,7 +10,7 @@ import my.javagame.main.Vector2D;
 public class Block extends Rectangle {
 	
 	Vector2D pos = new Vector2D();
-	private int blockSize = 32;
+	private int blockSize = 64;
 	private BlockType blockType;
 	private BufferedImage block;
 	private boolean isSolid;

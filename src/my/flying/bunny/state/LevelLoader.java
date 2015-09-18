@@ -9,6 +9,7 @@ import my.flying.bunny.moveable.Bunny;
 public class LevelLoader extends GameState{
 	
 	public static World world;
+	public static GameStateManager gsm;
 	private String worldName;
 	private String mapName;
 	
@@ -19,12 +20,15 @@ public class LevelLoader extends GameState{
 	
 	public LevelLoader(GameStateManager gsm) {
 		super(gsm);
+		LevelLoader.gsm = gsm;
 	}
 	public LevelLoader(GameStateManager gsm, String worldName, String mapName, int level) {
 		super(gsm);
 		this.worldName = worldName;
 		this.mapName = mapName;
 		this.level = level;
+		
+		LevelLoader.gsm = gsm;
 	}
 	
 	@Override
@@ -32,12 +36,10 @@ public class LevelLoader extends GameState{
 		if(worldName == null){
 			worldName = "World";
 			mapName = "gamefield";
-			
-			wSpawnX = 14; wSpawnY = 15;
 		}
 		
 		world = new World(worldName, this, gsm, level);
-		world.setSize(50, 800);
+		world.setSize(14, 800);
 		world.setWorldSpawn();
 		world.addPlayer(new Bunny());
 		world.init();

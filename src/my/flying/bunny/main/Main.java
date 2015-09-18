@@ -1,6 +1,7 @@
 package my.flying.bunny.main;
 
 import my.flying.bunny.gameloop.GameLoop;
+import my.flying.bunny.listener.KeyEventListener;
 import my.flying.bunny.managers.MouseManager;
 import my.flying.bunny.moveable.BoostBar;
 import my.flying.bunny.moveable.Bunny;
@@ -16,7 +17,7 @@ public class Main {
 		
 		window.addMouseListener(new MouseManager());
 		window.addMouseMotionListener(new MouseManager());
-		window.addKeyListener(new Bunny());
+		window.addKeyListener(new KeyEventListener());
 		window.addKeyListener(new BoostBar(null, height, height));
 		window.add(new GameLoop(width, height));
 		window.setVisible(true);

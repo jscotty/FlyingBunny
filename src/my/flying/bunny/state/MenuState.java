@@ -14,6 +14,7 @@ public class MenuState extends GameState {
 	GameStateButton startButton;
 	GameStateButton quitButton;
 	BufferedImage logo;
+	BufferedImage bg;
 	MouseManager mm;
 	
 	 
@@ -24,8 +25,9 @@ public class MenuState extends GameState {
 	@Override
 	public void init() {
 		logo = Assets.getLogo();
+		bg = Assets.getLauncheBG();
 		mm = new MouseManager();
-		startButton = new GameStateButton((800/2) - (32*3+16), 300,new UpgradeState(gsm),gsm,Assets.getStartButton_normal(),Assets.getStartButton_active());
+		startButton = new GameStateButton((800/2) - (40*3+16), 300,new UpgradeState(gsm),gsm,Assets.getButton_normal(),Assets.getButton_active(),"Start", 40);
 		
 	}
 
@@ -38,8 +40,7 @@ public class MenuState extends GameState {
 
 	@Override
 	public void render(Graphics2D g) {
-		g.setColor(new Color(91,181,77));
-		g.fillRect(0, 0, 800, 600);
+		g.drawImage(bg, 0,-30,null);
 		g.drawImage(logo, 100,50,64*9,64*4,null);
 	        
 		startButton.render(g);
