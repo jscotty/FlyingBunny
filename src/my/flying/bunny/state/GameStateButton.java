@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import my.flying.bunny.main.Loading;
 import my.flying.bunny.managers.GameStateManager;
 import my.flying.bunny.managers.MouseManager;
+import my.flying.bunny.saveload.SaveLoad;
 import my.javagame.main.Vector2D;
 
 public class GameStateButton extends Rectangle{
@@ -100,6 +101,7 @@ public class GameStateButton extends Rectangle{
 					count++;
 					if(count >= 3){
 						//clicked function
+						SaveLoad.save();
 						hoover = false;
 						MouseManager.pressed = false;
 						gsm.states.push(gameState);

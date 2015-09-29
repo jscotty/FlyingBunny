@@ -59,16 +59,12 @@ public class BoostBar implements KeyListener{
 		if(speed == 0 && boostMultiplier == 0){
 			boostMultiplier = (percent / 100 )*2;
 			player.setSpeed(player.getCanonSpeed()*boostMultiplier);
-			System.out.println("p*bm: " + (player.getMaxSpeed()*boostMultiplier) + " p: " + player.getMaxSpeed() + " bm: " + boostMultiplier);
-		}
-		if(!KeyEventListener.space){
-			System.out.println("bm: " + (percent / 100 )*2 + " %: " + percent);
 		}
 	//	System.out.println(percent + " ypos" + (pinPos.yPos-200));
 	}
 	
 	public void render(Graphics2D g){
-		g.drawImage(bar, (int)pos.xPos, (int)pos.yPos, 32, 160, null);
+		g.drawImage(bar, (int)pos.xPos, (int)pos.yPos-32, 32, 192, null);
 		g.drawImage(pin, (int)pinPos.xPos, (int)pinPos.yPos, 32, 16, null);
 	}
 	

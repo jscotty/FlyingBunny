@@ -16,7 +16,6 @@ public class TileManager {
 	
 
 	public TileManager() {
-		
 	}
 
 	public void tick(double deltaTime){

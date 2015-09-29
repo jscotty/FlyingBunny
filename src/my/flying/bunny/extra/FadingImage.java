@@ -12,7 +12,7 @@ public class FadingImage {
 
 	private Vector2D pos = new Vector2D(0,0);
 	private BufferedImage image;
-	private float lifeFade = 1, fadeSpeed;
+	private float lifeFade = 1f, fadeSpeed;
 	private boolean fadeUp = false, fullSize = false;
 
 	private float width, height;

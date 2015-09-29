@@ -22,8 +22,8 @@ public class GameLoop extends IDGameLoop{
 		animations = new Animations();
 		
 		assets.init();
-		gsm.init();
 		animations.init();
+		gsm.init();
 		
 		
 		

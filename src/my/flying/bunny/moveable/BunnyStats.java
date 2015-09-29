@@ -3,17 +3,19 @@ package my.flying.bunny.moveable;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import my.flying.bunny.assets.Assets;
 import my.flying.bunny.listener.KeyEventListener;
 
 public class BunnyStats {
 	
 	private Bunny player;
-	private float fuel = 150;
-	private float fuelSubstract = 0.05f;
+	private float fuel = 90;
+	private float fuelSubstract = 0.1f;
+	private float yPos = 40;
 	
 	public static boolean hasFuel;
 	
-	private int width = (int)fuel, height = 12;
+	private int height= (int)fuel;
 	
 	public BunnyStats(Bunny player) {
 		this.player = player;
@@ -29,15 +31,18 @@ public class BunnyStats {
 		
 		if(KeyEventListener.up && KeyEventListener.space){
 			fuel-= fuelSubstract;
+			yPos += fuelSubstract;
 		}
 	}
 	
 	public void render(Graphics2D g){
 
-		g.setColor(Color.yellow);
-		g.fillRect(550, 10, (int)fuel, height);
-		g.setColor(Color.black);
-		g.drawRect(550, 10, width, height);
+		g.setColor(new Color(64,41,40));
+		g.fillRect(570, 40, Assets.getFuelBar().getWidth()-40, height);
+		g.fillRect(570, (int)yPos, Assets.getFuelBar().getWidth()-40, (int)fuel);
+		g.setColor(Color.red);
+		g.fillRect(570, (int)yPos, Assets.getFuelBar().getWidth()-40, (int)fuel);
+		g.drawImage(Assets.getFuelBar(), 550,10,null);
 	}
 	
 
